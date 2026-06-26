@@ -1,0 +1,51 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: cookies-nym-db
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-cookies_nym}
+      - POSTGRES_USER=${POSTGRES_USER:-cookies_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-cookies_password_2026}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      # Host 5436 -> contenedor 5432 para no chocar con otros Postgres locales (5432/5433/5434/5435 ya en uso).
+      # La web se conecta a la base por la red interna (db:5432), no por este puerto.
+      - "5436:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cookies_user} -d ${POSTGRES_DB:-cookies_nym}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - DATABASE_URL=postgresql://${POSTGRES_USER:-cookies_user}:${POSTGRES_PASSWORD:-cookies_password_2026}@db:5432/${POSTGRES_DB:-cookies_nym}
+    container_name: cookies-nym-web
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-cookies_user}:${POSTGRES_PASSWORD:-cookies_password_2026}@db:5432/${POSTGRES_DB:-cookies_nym}
+      - ADMIN_USER=${ADMIN_USER:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-cookies2026}
+      - JWT_SECRET=${JWT_SECRET:-cookies-nym-secret-cambiar-en-produccion-2026}
+      # Contacto inicial (solo se usa la primera vez para sembrar la base)
+      - NEXT_PUBLIC_WHATSAPP=${NEXT_PUBLIC_WHATSAPP:-5491153347746}
+      - NEXT_PUBLIC_INSTAGRAM=${NEXT_PUBLIC_INSTAGRAM:-nahirorrego}
+      - NEXT_PUBLIC_EMAIL=${NEXT_PUBLIC_EMAIL:-}
+      - NEXT_PUBLIC_LINKEDIN=${NEXT_PUBLIC_LINKEDIN:-}
+    volumes:
+      - uploads_data:/app/public/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  uploads_data:

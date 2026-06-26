@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Cada cookie / variedad del catálogo
+model Cookie {
+  id          Int      @id @default(autoincrement())
+  name        String
+  slug        String   @unique
+  description String   @default("")
+  ingredients String[] @default([])
+  price       String   @default("")
+  image       String   @default("")
+  accent      String   @default("#d17e36")
+  tags        String[] @default([])
+  featured    Boolean  @default(false)
+  active      Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Configuración del sitio (fila única id=1): marca, contacto y textos
+model Settings {
+  id               Int      @id @default(1)
+  brandName        String   @default("Cookies NyM")
+  tagline          String   @default("Cookies artesanales horneadas a mano")
+  // Contacto
+  contactName      String   @default("Nahir Orrego")
+  whatsapp         String   @default("5491153347746")
+  whatsappEnabled  Boolean  @default(true)
+  email            String   @default("")
+  emailEnabled     Boolean  @default(false)
+  instagram        String   @default("nahirorrego")
+  instagramEnabled Boolean  @default(true)
+  linkedin         String   @default("")
+  linkedinEnabled  Boolean  @default(false)
+  zone             String   @default("CABA y Gran Buenos Aires")
+  // Contenido
+  heroTitle        String   @default("Cookies que se hornean con amor")
+  heroSubtitle     String   @default("Recién horneadas, hechas a mano, con ingredientes de verdad.")
+  heroImage        String   @default("/images/cookies-hero.jpg")
+  heroVideo        String   @default("")
+  aboutTitle       String   @default("Hechas a mano, como antes")
+  aboutText        String   @default("")
+  aboutImage       String   @default("/images/proceso.jpg")
+  updatedAt        DateTime @updatedAt
+}
+
+// Pedidos / consultas que llegan desde el formulario de contacto
+model Order {
+  id        Int      @id @default(autoincrement())
+  name      String
+  contact   String
+  message   String   @default("")
+  items     String   @default("")
+  status    String   @default("nuevo")
+  createdAt DateTime @default(now())
+
+  @@index([status])
+}
