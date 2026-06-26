@@ -18,7 +18,7 @@ async function main() {
     console.log('Conectado a PostgreSQL')
 
     await client.query(`
-      CREATE TABLE IF NOT EXISTS "Cookie" (
+      CREATE TABLE IF NOT EXISTS "web_cookies_no_productos" (
         "id" SERIAL PRIMARY KEY,
         "name" TEXT NOT NULL,
         "slug" TEXT UNIQUE NOT NULL,
@@ -35,7 +35,7 @@ async function main() {
         "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
       );
 
-      CREATE TABLE IF NOT EXISTS "Settings" (
+      CREATE TABLE IF NOT EXISTS "web_cookies_no_config" (
         "id" INTEGER PRIMARY KEY DEFAULT 1,
         "brandName" TEXT NOT NULL DEFAULT 'Cookies NyM',
         "tagline" TEXT NOT NULL DEFAULT 'Cookies artesanales horneadas a mano',
@@ -59,7 +59,7 @@ async function main() {
         "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
       );
 
-      CREATE TABLE IF NOT EXISTS "Order" (
+      CREATE TABLE IF NOT EXISTS "web_cookies_no_pedidos" (
         "id" SERIAL PRIMARY KEY,
         "name" TEXT NOT NULL,
         "contact" TEXT NOT NULL,
@@ -69,7 +69,7 @@ async function main() {
         "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
       );
 
-      CREATE INDEX IF NOT EXISTS "Order_status_idx" ON "Order"("status");
+      CREATE INDEX IF NOT EXISTS "web_cookies_no_pedidos_status_idx" ON "web_cookies_no_pedidos"("status");
     `)
 
     console.log('Tablas listas')
