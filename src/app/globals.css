@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cream: #f5ece1;
+  --cocoa-900: #1a120c;
+  --cocoa-800: #2c1f17;
+  --caramel: #dd9450;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--cocoa-900);
+  color: var(--cream);
+}
+
+/* Scrollbar cálida */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #1a120c;
+}
+::-webkit-scrollbar-thumb {
+  background: #9c5026;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d17e36;
+}
+
+/* Marquee infinito (banda de ingredientes) */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Borde giratorio del botón flotante de WhatsApp */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 3.5s linear infinite;
+}
+
+/* Zoom lento estilo Ken Burns para el hero */
+@keyframes kenburns {
+  0% { transform: scale(1.05); }
+  100% { transform: scale(1.18); }
+}
+.animate-kenburns {
+  animation: kenburns 14s ease-out infinite alternate;
+}
+
+/* Aparición suave para el slider del hero */
+.hero-slide {
+  opacity: 0;
+  transition: opacity 1.6s ease-in-out;
+}
+.hero-slide.is-active {
+  opacity: 1;
+}
+
+/* Texto seleccionable con tinte cálido */
+::selection {
+  background: #d17e36;
+  color: #1a120c;
+}

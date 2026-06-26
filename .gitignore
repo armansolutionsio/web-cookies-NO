@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js
+.next/
+out/
+
+# Production
+build/
+
+# Misc
+.DS_Store
+*.pem
+Thumbs.db
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Env
+.env
+.env*.local
+
+# Uploads (imágenes subidas desde el admin en runtime)
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Override local de compose
+docker-compose.override.yml
