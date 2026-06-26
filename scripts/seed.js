@@ -26,12 +26,12 @@ async function main() {
     await client.connect()
 
     // --- Settings (fila única id=1) ---
-    const s = await client.query('SELECT COUNT(*)::int AS n FROM "Settings"')
+    const s = await client.query('SELECT COUNT(*)::int AS n FROM "web_cookies_no_config"')
     if (s.rows[0].n === 0) {
       const heroSubtitle = 'Recién horneadas, hechas a mano, con ingredientes de verdad. Tu antojo, a un mensaje de distancia.'
       const aboutText = 'En Cookies NyM cada cookie se amasa y hornea por encargo, en tandas chicas. Sin conservantes, sin atajos: manteca de verdad, chocolate de verdad y mucho cariño. El resultado es esa cookie de afuera crocante y adentro tierna que te hace cerrar los ojos en el primer bocado.'
       await client.query(
-        `INSERT INTO "Settings" ("id","whatsapp","instagram","email","linkedin","heroSubtitle","aboutText","updatedAt")
+        `INSERT INTO "web_cookies_no_config" ("id","whatsapp","instagram","email","linkedin","heroSubtitle","aboutText","updatedAt")
          VALUES (1,$1,$2,$3,$4,$5,$6,CURRENT_TIMESTAMP)`,
         [
           process.env.NEXT_PUBLIC_WHATSAPP || '5491153347746',
@@ -43,19 +43,19 @@ async function main() {
         ]
       )
       // Si vino mail/linkedin por env, los habilitamos
-      if (process.env.NEXT_PUBLIC_EMAIL) await client.query('UPDATE "Settings" SET "emailEnabled"=true WHERE id=1')
-      if (process.env.NEXT_PUBLIC_LINKEDIN) await client.query('UPDATE "Settings" SET "linkedinEnabled"=true WHERE id=1')
+      if (process.env.NEXT_PUBLIC_EMAIL) await client.query('UPDATE "web_cookies_no_config" SET "emailEnabled"=true WHERE id=1')
+      if (process.env.NEXT_PUBLIC_LINKEDIN) await client.query('UPDATE "web_cookies_no_config" SET "linkedinEnabled"=true WHERE id=1')
       console.log('Settings sembrados')
     } else {
       console.log('Settings ya existen, no se tocan')
     }
 
     // --- Cookies (solo si la tabla está vacía) ---
-    const c = await client.query('SELECT COUNT(*)::int AS n FROM "Cookie"')
+    const c = await client.query('SELECT COUNT(*)::int AS n FROM "web_cookies_no_productos"')
     if (c.rows[0].n === 0) {
       for (const k of COOKIES) {
         await client.query(
-          `INSERT INTO "Cookie" ("name","slug","description","ingredients","price","image","accent","tags","featured","active","order","updatedAt")
+          `INSERT INTO "web_cookies_no_productos" ("name","slug","description","ingredients","price","image","accent","tags","featured","active","order","updatedAt")
            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,true,$10,CURRENT_TIMESTAMP)
            ON CONFLICT ("slug") DO NOTHING`,
           [k.name, k.slug, k.description, k.ingredients, k.price, k.image, k.accent, k.tags, k.featured, k.order]

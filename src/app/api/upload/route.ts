@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
 import { rateLimit } from '@/lib/rate-limit'
+import { cloudinaryEnabled, uploadToCloudinary } from '@/lib/cloudinary'
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 
@@ -35,14 +36,22 @@ export async function POST(request: Request) {
 
     const bytes = Buffer.from(await file.arrayBuffer())
     const ext = EXT[file.type] || 'jpg'
-    const name = `cookie-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
+    const baseName = `cookie-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
 
+    // Producción: subir a Cloudinary (persistente, CDN). La URL https se guarda
+    // tal cual en la base y next.config ya permite imágenes remotas.
+    if (cloudinaryEnabled) {
+      const url = await uploadToCloudinary(bytes, baseName)
+      return NextResponse.json({ url })
+    }
+
+    // Fallback a disco (desarrollo local sin Cloudinary configurado).
+    // Se sirve vía /api/uploads/<name> (el server standalone de Next no sirve
+    // archivos agregados a /public en runtime, pero la ruta de API sí los lee).
+    const name = `${baseName}.${ext}`
     const dir = path.join(process.cwd(), 'public', 'uploads')
     await mkdir(dir, { recursive: true })
     await writeFile(path.join(dir, name), bytes)
-
-    // Se sirve vía /api/uploads/<name> (el server standalone de Next no sirve
-    // archivos agregados a /public en runtime, pero la ruta de API sí los lee).
     return NextResponse.json({ url: `/api/uploads/${name}` })
   } catch (err) {
     console.error('Upload error:', err)
