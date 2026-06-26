@@ -189,34 +189,57 @@ export const defaultCookies: Cookie[] = [
 ]
 
 // Opciones de cajas / cantidades (sección "Cajas")
-export const boxes = [
+export type Box = {
+  id: number
+  name: string
+  qty: string
+  description: string
+  price: string
+  highlight: boolean
+  active: boolean
+  order: number
+}
+
+export const defaultBoxes: Box[] = [
   {
+    id: 1,
     name: 'Caja Degustación',
     qty: '4 cookies',
     description: 'Probá 4 sabores a elección. Ideal para conocernos.',
     price: '$6.900',
     highlight: false,
+    active: true,
+    order: 1,
   },
   {
+    id: 2,
     name: 'Caja Clásica',
     qty: '6 cookies',
     description: 'La medida perfecta para compartir (o no). La más elegida.',
     price: '$9.900',
     highlight: true,
+    active: true,
+    order: 2,
   },
   {
+    id: 3,
     name: 'Caja Familiar',
     qty: '12 cookies',
     description: 'Para los que no se quieren quedar sin. Surtido a gusto.',
     price: '$18.500',
     highlight: false,
+    active: true,
+    order: 3,
   },
   {
+    id: 4,
     name: 'Caja Eventos',
     qty: '24 cookies',
     description: 'Cumpleaños, oficinas y celebraciones. Personalizable.',
     price: '$34.900',
     highlight: false,
+    active: true,
+    order: 4,
   },
 ]
 

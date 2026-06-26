@@ -29,7 +29,7 @@ export default function WhatsAppButton({ settings }: { settings: Settings }) {
             className="bg-cocoa-800 border border-caramel-500/25 rounded-lg px-4 py-3 shadow-xl shadow-black/40 max-w-[230px]"
           >
             <p className="text-[#f5ece1] text-xs font-medium leading-snug">
-              ¿Se te antojó algo dulce? 🍪
+              ¿Se te antojó algo dulce?
             </p>
             <p className="text-caramel-300/80 text-[10px] font-light mt-1">
               Escribinos y armamos tu caja

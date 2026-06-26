@@ -45,7 +45,7 @@ export default function Corporate({ settings }: { settings: Settings }) {
 
           <div className="flex flex-wrap items-center gap-4 mt-9">
             <a
-              href={waLink(settings, 'Hola! Quiero una cotización para empresas/eventos 🍪')}
+              href={waLink(settings, 'Hola! Quiero una cotización para empresas/eventos')}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-caramel-500 text-cocoa-900 text-xs font-semibold tracking-[0.2em] uppercase px-8 py-4 rounded-full hover:bg-caramel-400 transition-colors"

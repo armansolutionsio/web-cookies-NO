@@ -1,11 +1,12 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import type { Settings } from '@/data/defaults'
-import { boxes } from '@/data/defaults'
+import type { Settings, Box } from '@/data/defaults'
+import { defaultBoxes } from '@/data/defaults'
 import { waLink } from '@/lib/links'
 
-export default function Boxes({ settings }: { settings: Settings }) {
+export default function Boxes({ settings, boxes }: { settings: Settings; boxes?: Box[] }) {
+  const items = boxes && boxes.length ? boxes : defaultBoxes
   return (
     <section id="cajas" className="relative bg-cocoa-800 py-24 md:py-32">
       <div className="max-w-7xl mx-auto px-6 md:px-8">
@@ -20,7 +21,7 @@ export default function Boxes({ settings }: { settings: Settings }) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {boxes.map((box, i) => (
+          {items.map((box, i) => (
             <motion.div
               key={box.name}
               initial={{ opacity: 0, y: 30 }}
@@ -51,7 +52,7 @@ export default function Boxes({ settings }: { settings: Settings }) {
                 {box.price}
               </p>
               <a
-                href={waLink(settings, `Hola! Quiero pedir la ${box.name} (${box.qty}) 🍪`)}
+                href={waLink(settings, `Hola! Quiero pedir la ${box.name} (${box.qty})`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`mt-6 text-center text-[11px] font-semibold tracking-[0.15em] uppercase px-5 py-3 rounded-full transition-colors ${

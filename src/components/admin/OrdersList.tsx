@@ -28,7 +28,6 @@ export default function OrdersList() {
   if (orders.length === 0)
     return (
       <div className="text-center py-16 bg-cocoa-900 rounded-xl border border-caramel-500/10">
-        <p className="text-4xl mb-3">📭</p>
         <p className="text-[#f5ece1]/50 text-sm">Todavía no llegaron consultas desde el formulario.</p>
       </div>
     )

@@ -16,7 +16,7 @@ export default function CookieCard({
   index?: number
 }) {
   const [open, setOpen] = useState(false)
-  const wa = waLink(settings, `Hola! Quiero pedir la cookie "${cookie.name}" 🍪`)
+  const wa = waLink(settings, `Hola! Quiero pedir la cookie "${cookie.name}"`)
 
   return (
     <motion.article

@@ -59,6 +59,19 @@ async function main() {
         "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
       );
 
+      CREATE TABLE IF NOT EXISTS "web_cookies_no_cajas" (
+        "id" SERIAL PRIMARY KEY,
+        "name" TEXT NOT NULL,
+        "qty" TEXT NOT NULL DEFAULT '',
+        "description" TEXT NOT NULL DEFAULT '',
+        "price" TEXT NOT NULL DEFAULT '',
+        "highlight" BOOLEAN NOT NULL DEFAULT false,
+        "active" BOOLEAN NOT NULL DEFAULT true,
+        "order" INTEGER NOT NULL DEFAULT 0,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+      );
+
       CREATE TABLE IF NOT EXISTS "web_cookies_no_pedidos" (
         "id" SERIAL PRIMARY KEY,
         "name" TEXT NOT NULL,

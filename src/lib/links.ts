@@ -4,7 +4,7 @@ import type { Settings } from '@/data/defaults'
 
 export function waLink(settings: Pick<Settings, 'whatsapp'>, text?: string) {
   const num = (settings.whatsapp || '').replace(/[^0-9]/g, '')
-  const msg = text || 'Hola Cookies NyM! Quiero hacer un pedido 🍪'
+  const msg = text || 'Hola Cookies NyM! Quiero hacer un pedido'
   return `https://wa.me/${num}?text=${encodeURIComponent(msg)}`
 }
 
