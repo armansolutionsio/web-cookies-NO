@@ -2,8 +2,10 @@ import { prisma } from './prisma'
 import {
   defaultSettings,
   defaultCookies,
+  defaultBoxes,
   type Settings,
   type Cookie,
+  type Box,
 } from '@/data/defaults'
 
 // Lee la configuración del sitio. Si la base no está disponible,
@@ -31,5 +33,19 @@ export async function getCookies(includeInactive = false): Promise<Cookie[]> {
     return rows as Cookie[]
   } catch {
     return defaultCookies
+  }
+}
+
+// Lee las cajas activas, ordenadas. Fallback a las de defecto.
+export async function getBoxes(includeInactive = false): Promise<Box[]> {
+  try {
+    const rows = await prisma.box.findMany({
+      where: includeInactive ? undefined : { active: true },
+      orderBy: { order: 'asc' },
+    })
+    if (rows.length === 0) return defaultBoxes
+    return rows as Box[]
+  } catch {
+    return defaultBoxes
   }
 }

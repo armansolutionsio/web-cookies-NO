@@ -2,20 +2,22 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import type { Cookie, Settings } from '@/data/defaults'
+import type { Cookie, Settings, Box } from '@/data/defaults'
 import { defaultSettings } from '@/data/defaults'
 import CookieEditor from '@/components/admin/CookieEditor'
+import BoxEditor from '@/components/admin/BoxEditor'
 import SettingsEditor from '@/components/admin/SettingsEditor'
 import OrdersList from '@/components/admin/OrdersList'
 import { CookieIcon } from '@/components/icons'
 
-type Tab = 'cookies' | 'contacto' | 'contenido' | 'pedidos'
+type Tab = 'cookies' | 'cajas' | 'contacto' | 'contenido' | 'pedidos'
 
-const TABS: { id: Tab; label: string; icon: string }[] = [
-  { id: 'cookies', label: 'Cookies', icon: '🍪' },
-  { id: 'contacto', label: 'Contacto', icon: '📱' },
-  { id: 'contenido', label: 'Contenido', icon: '✏️' },
-  { id: 'pedidos', label: 'Pedidos', icon: '📥' },
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'cookies', label: 'Cookies' },
+  { id: 'cajas', label: 'Cajas' },
+  { id: 'contacto', label: 'Contacto' },
+  { id: 'contenido', label: 'Contenido' },
+  { id: 'pedidos', label: 'Pedidos' },
 ]
 
 export default function AdminPage() {
@@ -23,7 +25,9 @@ export default function AdminPage() {
   const [tab, setTab] = useState<Tab>('cookies')
   const [settings, setSettings] = useState<Settings | null>(null)
   const [cookies, setCookies] = useState<Cookie[]>([])
+  const [boxes, setBoxes] = useState<Box[]>([])
   const [editing, setEditing] = useState<Cookie | 'new' | null>(null)
+  const [editingBox, setEditingBox] = useState<Box | 'new' | null>(null)
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
 
@@ -33,14 +37,22 @@ export default function AdminPage() {
     if (res.ok) setCookies(await res.json())
   }, [router])
 
+  const loadBoxes = useCallback(async () => {
+    const res = await fetch('/api/boxes')
+    if (res.status === 401) { router.push('/admin/login'); return }
+    if (res.ok) setBoxes(await res.json())
+  }, [router])
+
   useEffect(() => {
     Promise.all([
       fetch('/api/settings').then((r) => (r.ok ? r.json() : null)),
       fetch('/api/cookies').then((r) => (r.ok ? r.json() : [])),
+      fetch('/api/boxes').then((r) => (r.ok ? r.json() : [])),
     ])
-      .then(([s, c]) => {
+      .then(([s, c, b]) => {
         setSettings(s || { id: 1, ...defaultSettings })
         setCookies(Array.isArray(c) ? c : [])
+        setBoxes(Array.isArray(b) ? b : [])
       })
       .finally(() => setLoading(false))
   }, [])
@@ -87,6 +99,42 @@ export default function AdminPage() {
     if (res.ok) await loadCookies()
   }
 
+  async function saveBox(data: Record<string, unknown>) {
+    setSaving(true)
+    try {
+      const isNew = editingBox === 'new'
+      const url = isNew ? '/api/boxes' : `/api/boxes/${(editingBox as Box).id}`
+      const res = await fetch(url, {
+        method: isNew ? 'POST' : 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (!res.ok) throw new Error()
+      setEditingBox(null)
+      await loadBoxes()
+    } catch {
+      alert('No se pudo guardar la caja. Revisá la conexión con la base de datos.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function deleteBox(b: Box) {
+    if (!confirm(`¿Eliminar "${b.name}"? Esta acción no se puede deshacer.`)) return
+    const res = await fetch(`/api/boxes/${b.id}`, { method: 'DELETE' })
+    if (res.ok) await loadBoxes()
+    else alert('No se pudo eliminar.')
+  }
+
+  async function toggleBoxActive(b: Box) {
+    const res = await fetch(`/api/boxes/${b.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ active: !b.active }),
+    })
+    if (res.ok) await loadBoxes()
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -122,14 +170,14 @@ export default function AdminPage() {
           {TABS.map((t) => (
             <button
               key={t.id}
-              onClick={() => { setTab(t.id); setEditing(null) }}
+              onClick={() => { setTab(t.id); setEditing(null); setEditingBox(null) }}
               className={`px-4 py-3 text-xs tracking-[0.1em] uppercase whitespace-nowrap border-b-2 transition-colors ${
                 tab === t.id
                   ? 'border-caramel-400 text-caramel-300'
                   : 'border-transparent text-[#f5ece1]/45 hover:text-[#f5ece1]/70'
               }`}
             >
-              <span className="mr-1.5">{t.icon}</span>{t.label}
+              {t.label}
             </button>
           ))}
         </div>
@@ -190,8 +238,68 @@ export default function AdminPage() {
                 </div>
                 {cookies.length === 0 && (
                   <div className="text-center py-16 bg-cocoa-800 rounded-xl border border-caramel-500/10">
-                    <p className="text-4xl mb-3">🍪</p>
                     <p className="text-[#f5ece1]/50 text-sm">Todavía no hay cookies. Agregá la primera.</p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {/* CAJAS */}
+        {tab === 'cajas' && (
+          <div>
+            {editingBox ? (
+              <div className="bg-cocoa-800 rounded-2xl p-6 md:p-8 border border-caramel-500/10">
+                <h2 className="font-display text-2xl font-bold text-[#fdf6ee] mb-6">
+                  {editingBox === 'new' ? 'Nueva caja' : `Editar: ${(editingBox as Box).name}`}
+                </h2>
+                <BoxEditor
+                  initial={editingBox === 'new' ? null : (editingBox as Box)}
+                  onSubmit={saveBox}
+                  onCancel={() => setEditingBox(null)}
+                  saving={saving}
+                />
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="font-display text-2xl font-bold text-[#fdf6ee]">Cajas y cantidades</h2>
+                    <p className="text-[#f5ece1]/45 text-sm mt-1">{boxes.length} cajas cargadas</p>
+                  </div>
+                  <button onClick={() => setEditingBox('new')} className="bg-caramel-500 text-cocoa-900 text-xs font-semibold tracking-[0.15em] uppercase px-5 py-3 rounded-full hover:bg-caramel-400 transition-colors">
+                    + Nueva caja
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {boxes.map((b) => (
+                    <div key={b.id} className="flex items-center gap-4 bg-cocoa-800 rounded-xl p-4 border border-caramel-500/10">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold text-[#fdf6ee] truncate">{b.name}</p>
+                          {b.qty && <span className="text-[#f5ece1]/40 text-xs shrink-0">· {b.qty}</span>}
+                        </div>
+                        <p className="text-caramel-300 text-sm mt-0.5">{b.price || 'Sin precio'}</p>
+                        <div className="flex items-center gap-2 mt-1.5">
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full ${b.active ? 'bg-green-900/40 text-green-300' : 'bg-cocoa-900 text-[#f5ece1]/40'}`}>
+                            {b.active ? 'Visible' : 'Oculta'}
+                          </span>
+                          {b.highlight && <span className="text-[10px] px-2 py-0.5 rounded-full bg-caramel-900/40 text-caramel-300">Destacada</span>}
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-1.5 shrink-0">
+                        <button onClick={() => setEditingBox(b)} className="text-caramel-300 text-xs hover:text-caramel-200">Editar</button>
+                        <button onClick={() => toggleBoxActive(b)} className="text-[#f5ece1]/50 text-xs hover:text-[#f5ece1]">{b.active ? 'Ocultar' : 'Mostrar'}</button>
+                        <button onClick={() => deleteBox(b)} className="text-red-400/70 text-xs hover:text-red-400">Borrar</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {boxes.length === 0 && (
+                  <div className="text-center py-16 bg-cocoa-800 rounded-xl border border-caramel-500/10">
+                    <p className="text-[#f5ece1]/50 text-sm">Todavía no hay cajas. Agregá la primera.</p>
                   </div>
                 )}
               </>

@@ -112,7 +112,7 @@ export default function Contact({ settings }: { settings: Settings }) {
                   <span className="text-cocoa-900 text-2xl">✓</span>
                 </div>
                 <h3 className="font-display text-2xl font-bold text-[#fdf6ee]">¡Mensaje enviado!</h3>
-                <p className="text-[#f5ece1]/55 text-sm mt-2">Te vamos a estar contactando muy pronto. ¡Gracias! 🍪</p>
+                <p className="text-[#f5ece1]/55 text-sm mt-2">Te vamos a estar contactando muy pronto. ¡Gracias!</p>
                 <button
                   onClick={() => setStatus('idle')}
                   className="mt-6 text-caramel-300 text-xs tracking-[0.15em] uppercase hover:text-caramel-200"

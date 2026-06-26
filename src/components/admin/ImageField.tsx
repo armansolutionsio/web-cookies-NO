@@ -42,7 +42,7 @@ export default function ImageField({
             // eslint-disable-next-line @next/next/no-img-element
             <img src={value} alt="preview" className="w-full h-full object-cover" />
           ) : (
-            <span className="text-[#f5ece1]/25 text-2xl">🍪</span>
+            <span className="text-[#f5ece1]/25 text-[10px] tracking-wide uppercase text-center px-1">Sin imagen</span>
           )}
         </div>
         <div className="flex-1 space-y-2">

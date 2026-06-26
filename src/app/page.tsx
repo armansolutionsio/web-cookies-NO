@@ -1,4 +1,4 @@
-import { getSettings, getCookies } from '@/lib/data'
+import { getSettings, getCookies, getBoxes } from '@/lib/data'
 import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
 import Marquee from '@/components/Marquee'
@@ -17,7 +17,7 @@ import WhatsAppButton from '@/components/WhatsAppButton'
 export const dynamic = 'force-dynamic'
 
 export default async function Home() {
-  const [settings, cookies] = await Promise.all([getSettings(), getCookies()])
+  const [settings, cookies, boxes] = await Promise.all([getSettings(), getCookies(), getBoxes()])
 
   const heroImages = Array.from(
     new Set([
@@ -36,7 +36,7 @@ export default async function Home() {
       <About settings={settings} />
       <HowItWorks />
       <Flavors cookies={cookies} settings={settings} />
-      <Boxes settings={settings} />
+      <Boxes settings={settings} boxes={boxes} />
       <Corporate settings={settings} />
       <Testimonials />
       <FAQ />

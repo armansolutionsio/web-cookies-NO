@@ -56,6 +56,22 @@ model Settings {
   @@map("web_cookies_no_config")
 }
 
+// Cajas / cantidades de la sección "Armá tu caja"
+model Box {
+  id          Int      @id @default(autoincrement())
+  name        String
+  qty         String   @default("")
+  description String   @default("")
+  price       String   @default("")
+  highlight   Boolean  @default(false)
+  active      Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("web_cookies_no_cajas")
+}
+
 // Pedidos / consultas que llegan desde el formulario de contacto
 model Order {
   id        Int      @id @default(autoincrement())

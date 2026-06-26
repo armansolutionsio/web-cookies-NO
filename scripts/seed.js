@@ -13,6 +13,13 @@ const COOKIES = [
   { name: 'Cookies & Cream', slug: 'cookies-and-cream', description: 'Para los amantes de la galletita negra. Masa de vainilla cargada de trozos de Oreo y chips de chocolate blanco. Un golazo asegurado.', ingredients: ['Harina', 'Manteca', 'Azúcar', 'Huevo', 'Vainilla', 'Trozos de galleta tipo Oreo', 'Chips de chocolate blanco'], price: 'desde $2.100 c/u', image: '/images/cookies-dark.jpg', accent: '#3a322f', tags: [], featured: false, order: 8 },
 ]
 
+const BOXES = [
+  { name: 'Caja Degustación', qty: '4 cookies', description: 'Probá 4 sabores a elección. Ideal para conocernos.', price: '$6.900', highlight: false, order: 1 },
+  { name: 'Caja Clásica', qty: '6 cookies', description: 'La medida perfecta para compartir (o no). La más elegida.', price: '$9.900', highlight: true, order: 2 },
+  { name: 'Caja Familiar', qty: '12 cookies', description: 'Para los que no se quieren quedar sin. Surtido a gusto.', price: '$18.500', highlight: false, order: 3 },
+  { name: 'Caja Eventos', qty: '24 cookies', description: 'Cumpleaños, oficinas y celebraciones. Personalizable.', price: '$34.900', highlight: false, order: 4 },
+]
+
 async function main() {
   const url = process.env.DATABASE_URL
   if (!url) { console.log('No DATABASE_URL, se omite seed'); return }
@@ -64,6 +71,21 @@ async function main() {
       console.log(`Cookies sembradas: ${COOKIES.length}`)
     } else {
       console.log('Cookies ya existen, no se tocan')
+    }
+
+    // --- Cajas (solo si la tabla está vacía) ---
+    const bx = await client.query('SELECT COUNT(*)::int AS n FROM "web_cookies_no_cajas"')
+    if (bx.rows[0].n === 0) {
+      for (const b of BOXES) {
+        await client.query(
+          `INSERT INTO "web_cookies_no_cajas" ("name","qty","description","price","highlight","active","order","updatedAt")
+           VALUES ($1,$2,$3,$4,$5,true,$6,CURRENT_TIMESTAMP)`,
+          [b.name, b.qty, b.description, b.price, b.highlight, b.order]
+        )
+      }
+      console.log(`Cajas sembradas: ${BOXES.length}`)
+    } else {
+      console.log('Cajas ya existen, no se tocan')
     }
   } catch (err) {
     console.log('Error en seed:', err.message)
